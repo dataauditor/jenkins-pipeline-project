@@ -1,0 +1,127 @@
+1.Jenkins Yukleme:
+>sudo yum update -y
+>sudo amazon-linux-extras install java-openjdk11 -y
+>sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat/jenkins.repo
+>sudo rpm --import https://pkg.jenkins.io/redhat/jenkins.io.key
+>sudo amazon-linux-extras install epel
+>sudo yum install jenkins -y
+>sudo systemctl start jenkins
+>sudo systemctl enable jenkins
+>sudo systemctl status jenkins
+>sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+  - sifreyi aliriz.
+
+4.Hands-on (Basic):
+- Temel Freestyle roject:
+- Instance acilir.
+  - 22 ve 8080 portlari acik.
+VSC:
+- ssh ile instance'a baglan.
+>sudo yum update -y
+>sudo amazon-linux-extras install java-openjdk11 -y
+>java -version
+>sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat/jenkins.repo
+>sudo rpm --import https://pkg.jenkins.io/redhat/jenkins.io.key
+>sudo amazon-linux-extras install epel
+>sudo yum install jenkins -y
+>sudo systemctl start jenkins
+>sudo systemctl enable jenkins
+>sudo systemctl status jenkins
+>sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+
+Jenkins Dashboard: 
+- Browserda <ec2'nun public ip>:8080 portundan jenkins dashboard'a baglanilir.
+> Manage Jenkins: ihtiyac duyulan pluginler indirilir. 
+  > Manage Plugins 
+  > Available 
+  > (AnsiColor, Copy Artifact, Deploy Container... vb) secilir > install without restart
+> New View: joblari siniflandiririz. 
+  > isim: tomcat application / list view > ok > apply > save
+> New item: job'lari olusturuyoruz.
+  > isim: my-first-job / Freestyle project / ok
+  > Discription: aciklama yazilabilir.
+  > Discard old builds: eski islerin sonu depolanir tarih ve/veya gun sinirlandirmasi getirir.
+  > Execute concurrent builds if necessary: normalde isleri teker teker yapar burada istenirse ayni anda birkac islem yapar.
+  > Source code management: github repo adresi eklenerek codelar githubtan cekilir.
+  > Build trigger: job'in baslatilma zamanini belirtir. Genelde bir trigger secilir. 
+    - GitHub hook trigger for GITScm polling: Github'a birisi code push edilince job'i calistirir.
+    - Poll SCM: belirli araliklarla repository'i kontrol eder degisiklik varsa job'i calistirir.
+  > Build Environment: Onceden yuklenen pluginler.
+    > Add timestamp to..: yapilan tum islemlere zaman ekler.
+  > Build: 
+    > Execute shell: echo "hi" > apply/save
+  > Build now 
+  > Yesil daire veya Console output (yapilan islemleri gosterir.)
+  
+
+5.Hands-on (Pipeline with Pipeline Script):
+> New Item
+  > isim: simple-pipeline / Pipeline / ok
+  > Pipelene / Pipeline Script
+--------------------------------------------------------------
+pipeline {
+    agent any
+    stages {
+        stage('build') {
+            steps {
+                echo "Clarusway_Way to Reinvent Yourself"
+                sh 'echo second step'
+                sh 'echo another step'                
+                sh '''
+                echo 'Multiline'
+                echo 'Example'
+                '''
+                echo 'not using shell'
+            }
+        }
+    }
+}
+--------------------------------------------------------------
+    - stage ve steps'ler ile farkli farkli gorevleri sira ile icra eder.
+  > apply / save
+  > Build now
+
+
+6.Hands-on (Pipeline with Jenkinsfile)
+- Pipeline Script'i Jenkinsfile olarak bir repoya yukleyip SCM tanimlayip repodan cektiririz.
+Github:
+> jenkinsfile-pipeline-project adli public repo olustur.
+  > /MY-WORKSPACE/DEVOPS/DevOps-Summary/6.Jenkins/Hands-on-calisma/jenkins-01-installing jenkins konumuna clonladik.
+  > git clone https://github.com/dataauditor/jenkinsfile-pipeline-project.git
+
+VSC:
+- local
+> Jenkinsfile olustur. (localde clonlanan dosyada) :
+-----------------------------------------------------------------
+pipeline {
+    agent any
+    stages {
+        stage('build') {
+            steps {
+                echo "Clarusway_Way to Reinvent Yourself"
+                sh 'echo using shell within Jenkinsfile'
+                echo 'not using shell in the Jenkinsfile'
+            }
+        }
+    }
+}
+-----------------------------------------------------------------
+    - groovy dilindedir.
+    - Jenkinsfile, Github'ta root directoryde olmali yoksa verilen adreste bulamaz veya konumu detayli verilmeli.
+  > git add . (ilgili dosya icindeyken)
+  > git commit -m 'added Jenkinsfile'
+  > git push
+
+VSC:
+- ec2-user
+>sudo yum install git -y
+  - SCM (source management code) olarak gitten Jenkinsfile cekilecek Jenkins tarafindan.
+  
+Jenkins:
+> New item 
+  > name: pipeline-from-jenkinsfile / Pipeline / ok
+  > Description: Simple pipeline configured with Jenkinsfile
+  > Pipeline > Definition: Pipeline script from SCM > SCM: Git > Repository URL gir (Code'dan kopyala) > Branch Specifier: master kontrol et > Script Path: Jenkinsfile > apply/save
+  > Build now
+
+
