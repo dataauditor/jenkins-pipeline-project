@@ -39,7 +39,7 @@ Jenkins Dashboard:
   > isim: tomcat application / list view > ok > apply > save
 > New item: job'lari olusturuyoruz.
   > isim: my-first-job / Freestyle project / ok
-  > Discription: aciklama yazilabilir.
+  > Discription: aciklama yazilabilir...
   > Discard old builds: eski islerin sonu depolanir tarih ve/veya gun sinirlandirmasi getirir.
   > Execute concurrent builds if necessary: normalde isleri teker teker yapar burada istenirse ayni anda birkac islem yapar.
   > Source code management: github repo adresi eklenerek codelar githubtan cekilir.
